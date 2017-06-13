@@ -1,5 +1,6 @@
 package kr.edcan.paebook.Utils;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 /**
@@ -11,5 +12,6 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
 }

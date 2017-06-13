@@ -13,4 +13,8 @@
     <string name="text_write_post">글쓰</string>
     <string name="text_post">게시글</string>
     <string name="text_write_comment">댓글 쓰기</string>
+    <string name="alert_password_confirm_not_match">불일치</string>
+    <string name="text_date_format">yyyy년 MM월 dd일</string>
+    <string name="alert_input_all_content">모든 항목을 입력해주세요</string>
+    <string name="alert_password_not_match">사용자가 존재하지 않거나 비밀번호가 일치하지 않습니다</string>
 </resources>

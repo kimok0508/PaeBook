@@ -1,23 +1,34 @@
 package kr.edcan.paebook.Activity;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import javax.security.auth.login.LoginException;
 
 import kr.edcan.paebook.R;
 
 public class SplashActivity extends AppCompatActivity {
-    private boolean isSignedUser = false;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        if(isSignedUser) nextMain();
-        else nextSignIn();
+        firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
+                if(currentUser == null) nextSignIn();
+                else nextMain();
+            }
+        });
     }
 
     private void nextSignIn(){

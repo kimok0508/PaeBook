@@ -12,8 +12,10 @@
         android:gravity="center">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/img_profile"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher"/>
 
         <LinearLayout
@@ -29,13 +31,17 @@
                 <TextView
                     android:layout_weight="1"
                     android:layout_width="0dp"
+                    android:gravity="center"
                     android:layout_height="wrap_content"
                     android:text="@string/text_email"/>
 
                 <EditText
                     android:id="@+id/edit_email"
                     android:layout_weight="5"
-                    android:backgroundTint="null"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:inputType="textEmailAddress"
+                    android:background="@null"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -48,14 +54,18 @@
                 <TextView
                     android:layout_weight="1"
                     android:layout_width="0dp"
+                    android:gravity="center"
                     android:layout_height="wrap_content"
                     android:text="@string/text_password"/>
 
                 <EditText
                     android:id="@+id/edit_password"
                     android:layout_weight="5"
-                    android:backgroundTint="null"
+                    android:background="@null"
                     android:layout_width="0dp"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:inputType="textPassword"
                     android:layout_height="wrap_content" />
             </LinearLayout>
 

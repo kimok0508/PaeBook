@@ -22,8 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.RegisterActivity" />
-        <activity android:name=".Activity.LogInActivity" />
+        <activity android:name=".Activity.RegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".Activity.LogInActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".Activity.PostActivity" />
         <activity android:name=".Activity.DetailActivity"></activity>
         <service android:name=".Service.FirebaseInstanceIdService">
