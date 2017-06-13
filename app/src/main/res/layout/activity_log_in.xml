@@ -1,11 +1,15 @@
 <FrameLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -15,12 +19,69 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_email"/>
+
+                <EditText
+                    android:id="@+id/edit_email"
+                    android:layout_weight="5"
+                    android:backgroundTint="null"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_password"/>
+
+                <EditText
+                    android:id="@+id/edit_password"
+                    android:layout_weight="5"
+                    android:backgroundTint="null"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_login"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:text="@string/text_login"
+                    android:layout_height="match_parent" />
+
+                <Space
+                    android:layout_width="16dp"
+                    android:layout_height="match_parent" />
+
+                <Button
+                    android:id="@+id/btn_register"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:text="@string/text_register"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
