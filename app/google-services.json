@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "437042358904",
+    "firebase_url": "https://paebook-293c0.firebaseio.com",
+    "project_id": "paebook-293c0",
+    "storage_bucket": "paebook-293c0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437042358904:android:86368b595180f42f",
+        "android_client_info": {
+          "package_name": "kr.edcan.paebook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "437042358904-qhqjhdjakqsgq6tq3g530sql6q3bv4as.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAt8E-FPWig-8a7853oSw0WGWziZzUCsDo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
