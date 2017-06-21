@@ -11,6 +11,8 @@ import kr.edcan.paebook.Models.UserProfile;
 
 public class Application extends android.app.Application {
     public static UserProfile userProfile = null;
+    public static String uuid = null;
+
     @Override
     public void onCreate() {
         super.onCreate();

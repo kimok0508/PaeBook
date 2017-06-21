@@ -1,5 +1,6 @@
 package kr.edcan.paebook.Activity;
 
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -81,39 +83,39 @@ public class LogInActivity extends AppCompatActivity {
                 final String email = editable.toString().trim();
 
                 if(email != null && !email.equals("")){
-                    dbUsers.child("email").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot != null){
-                                final UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                                final String imageUrl = userProfile.getProfileUrl();
-
-                                if(imageUrl != null && !imageUrl.equals("")){
-                                    Glide.with(LogInActivity.this)
-                                            .load(imageUrl)
-                                            .bitmapTransform(new CropCircleTransformation(LogInActivity.this))
-                                            .crossFade()
-                                            .placeholder(R.drawable.ic_default_profile)
-                                            .into(imgProfile);
-
-                                    Glide.with(LogInActivity.this)
-                                            .load(imageUrl)
-                                            .bitmapTransform(new BlurTransformation(LogInActivity.this, 64))
-                                            .crossFade()
-                                            .thumbnail(0.25f)
-                                            .into(imgBackground);
-                                }else{
-                                    imgBackground.setImageResource(R.drawable.ic_default_profile);
-                                    imgProfile.setImageResource(R.mipmap.ic_launcher_round);
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+//                    dbUsers.child("email").addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            if(dataSnapshot != null){
+//                                final UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+//                                final String imageUrl = userProfile.getProfileUrl();
+//
+//                                if(imageUrl != null && !imageUrl.equals("")){
+//                                    Glide.with(LogInActivity.this)
+//                                            .load(imageUrl)
+//                                            .bitmapTransform(new CropCircleTransformation(LogInActivity.this))
+//                                            .crossFade()
+//                                            .placeholder(R.drawable.ic_default_profile)
+//                                            .into(imgProfile);
+//
+//                                    Glide.with(LogInActivity.this)
+//                                            .load(imageUrl)
+//                                            .bitmapTransform(new BlurTransformation(LogInActivity.this, 64))
+//                                            .crossFade()
+//                                            .thumbnail(0.25f)
+//                                            .into(imgBackground);
+//                                }else{
+//                                    imgBackground.setImageResource(R.drawable.ic_default_profile);
+//                                    imgProfile.setImageResource(R.mipmap.ic_launcher_round);
+//                                }
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                    });
                 }
             }
         });
@@ -155,7 +157,7 @@ public class LogInActivity extends AppCompatActivity {
         }
     }
 
-    private void firebaseAuth(String email, String password){
+    private void firebaseAuth(String email, String password) {
         final ProgressDialog progressDialog = new ProgressDialog(LogInActivity.this);
         progressDialog.setTitle(R.string.alert_title_please_wait);
         progressDialog.setMessage(getString(R.string.alert_waiting_for_server));
@@ -164,10 +166,30 @@ public class LogInActivity extends AppCompatActivity {
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                progressDialog.dismiss();
-                if(task.isSuccessful()){
-                    //
-                }else{
+                if (task.isSuccessful()) {
+                    final FirebaseUser currentUser = task.getResult().getUser();
+
+                    dbUsers.child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            kr.edcan.paebook.Utils.Application.uuid = currentUser.getUid();
+                            if(dataSnapshot!=null) {
+                                kr.edcan.paebook.Utils.Application.userProfile = dataSnapshot.getValue(UserProfile.class);
+                            }
+                            progressDialog.dismiss();
+
+                            final Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            progressDialog.dismiss();
+                        }
+                    });
+                } else {
+                    progressDialog.dismiss();
                     Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             }

@@ -45,11 +45,12 @@ public class SplashActivity extends AppCompatActivity {
         dbUsers = firebaseDatabase.getReference("users").getRef();
     }
 
-    private void getUserProfile(FirebaseUser firebaseUser){
+    private void getUserProfile(final FirebaseUser firebaseUser){
         dbUsers.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot != null){
+                    Application.uuid = firebaseUser.getUid();
                     Application.userProfile = dataSnapshot.getValue(UserProfile.class);
                     nextMain();
                 }
@@ -66,6 +67,7 @@ public class SplashActivity extends AppCompatActivity {
         final Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+        finish();
     }
 
     private void nextMain(){
@@ -76,6 +78,8 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(intent);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }finally {
+            finish();
         }
     }
 }

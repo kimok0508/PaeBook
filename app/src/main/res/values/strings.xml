@@ -10,11 +10,12 @@
     <string name="text_profile_photo">프로필 사진</string>
     <string name="text_confirm">확인</string>
     <string name="text_post_list">게시판</string>
-    <string name="text_write_post">글쓰</string>
+    <string name="text_write_post">글쓰기</string>
     <string name="text_post">게시글</string>
     <string name="text_write_comment">댓글 쓰기</string>
     <string name="alert_password_confirm_not_match">불일치</string>
     <string name="text_date_format">yyyy년 MM월 dd일</string>
+    <string name="text_date_format_detail">yyyy년 MM월 dd일 a hh시 mm분</string>
     <string name="alert_input_all_content">모든 항목을 입력해주세요</string>
     <string name="alert_password_not_match">사용자가 존재하지 않거나 비밀번호가 일치하지 않습니다</string>
     <string name="option_picture_title">사진 선택</string>
@@ -24,4 +25,8 @@
     <string name="text_select_date">날짜 선택</string>
     <string name="alert_title_please_wait">잠시만 기다려주세요</string>
     <string name="alert_waiting_for_server">서버의 응답을 기다리고 있습니다</string>
+    <string name="text_title">제목</string>
+    <string name="text_content">내용</string>
+    <string name="text_picture">사진</string>
+    <string name="warn_no_data">존재하지 않는 게시글입니다</string>
 </resources>
