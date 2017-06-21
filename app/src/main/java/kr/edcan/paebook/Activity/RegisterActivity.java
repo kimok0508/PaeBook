@@ -2,6 +2,7 @@ package kr.edcan.paebook.Activity;
 
 import android.app.DatePickerDialog;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -159,6 +160,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if(!name.equals("") && !email.equals("") && !password.equals("") && !passwordConfirm.equals("") && birthDate != null){
                     if (password.equals(passwordConfirm)) {
+                        final ProgressDialog progressDialog = new ProgressDialog(RegisterActivity.this);
+                        progressDialog.setTitle(R.string.alert_title_please_wait);
+                        progressDialog.setMessage(getString(R.string.alert_waiting_for_server));
+                        progressDialog.show();
                         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -175,14 +180,14 @@ public class RegisterActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                                 if (task.isSuccessful()) {
                                                     final String profileUrl = task.getResult().getDownloadUrl().toString();
-                                                    sendUserProfile(email, password, dbTarget, userProfile.setProfileUrl(profileUrl));
+                                                    sendUserProfile(email, password, progressDialog,dbTarget, userProfile.setProfileUrl(profileUrl));
                                                 } else {
                                                     Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                                 }
                                             }
                                         });
                                     } else {
-                                        sendUserProfile(email, password, dbTarget, userProfile);
+                                        sendUserProfile(email, password, progressDialog, dbTarget, userProfile);
                                     }
                                 } else {
                                     Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -199,10 +204,11 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void sendUserProfile(final String email, final String password, DatabaseReference dbTarget, UserProfile userProfile){
+    private void sendUserProfile(final String email, final String password, final ProgressDialog progressDialog,DatabaseReference dbTarget, UserProfile userProfile){
         dbTarget.setValue(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                progressDialog.dismiss();
                 if(task.isSuccessful()){
                     final Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
                     intent.putExtra("email", email);

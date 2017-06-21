@@ -22,4 +22,6 @@
     <string name="option_select_camera">카메라</string>
     <string name="warn_permission">이 기능을 사용하려면 권한을 허가해야합니다</string>
     <string name="text_select_date">날짜 선택</string>
+    <string name="alert_title_please_wait">잠시만 기다려주세요</string>
+    <string name="alert_waiting_for_server">서버의 응답을 기다리고 있습니다</string>
 </resources>

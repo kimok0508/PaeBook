@@ -1,5 +1,6 @@
 package kr.edcan.paebook.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -25,6 +27,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import kr.edcan.paebook.Models.UserProfile;
 import kr.edcan.paebook.R;
 
@@ -34,7 +38,7 @@ public class LogInActivity extends AppCompatActivity {
     private DatabaseReference dbUsers;
     private EditText editEmail, editPassword;
     private Button btnLogIn, btnRegister;
-    private ImageView imgProfile;
+    private ImageView imgProfile, imgBackground;
     private Intent intent;
 
     @Override
@@ -55,6 +59,7 @@ public class LogInActivity extends AppCompatActivity {
 
     private void init(){
         imgProfile = (ImageView) findViewById(R.id.img_profile);
+        imgBackground = (ImageView) findViewById(R.id.img_background);
         editEmail = (EditText) findViewById(R.id.edit_email);
         editPassword = (EditText) findViewById(R.id.edit_password);
         btnLogIn = (Button) findViewById(R.id.btn_login);
@@ -76,12 +81,31 @@ public class LogInActivity extends AppCompatActivity {
                 final String email = editable.toString().trim();
 
                 if(email != null && !email.equals("")){
-                    dbUsers.child(email).addListenerForSingleValueEvent(new ValueEventListener() {
+                    dbUsers.child("email").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot != null){
                                 final UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                                final String imageUrl = userProfile.getProfileUrl();
 
+                                if(imageUrl != null && !imageUrl.equals("")){
+                                    Glide.with(LogInActivity.this)
+                                            .load(imageUrl)
+                                            .bitmapTransform(new CropCircleTransformation(LogInActivity.this))
+                                            .crossFade()
+                                            .placeholder(R.drawable.ic_default_profile)
+                                            .into(imgProfile);
+
+                                    Glide.with(LogInActivity.this)
+                                            .load(imageUrl)
+                                            .bitmapTransform(new BlurTransformation(LogInActivity.this, 64))
+                                            .crossFade()
+                                            .thumbnail(0.25f)
+                                            .into(imgBackground);
+                                }else{
+                                    imgBackground.setImageResource(R.drawable.ic_default_profile);
+                                    imgProfile.setImageResource(R.mipmap.ic_launcher_round);
+                                }
                             }
                         }
 
@@ -122,14 +146,25 @@ public class LogInActivity extends AppCompatActivity {
         intent = getIntent();
 
         if (intent.hasExtra("email") && intent.hasExtra("password")) {
+            final String email = intent.getStringExtra("email");
+            final String password = intent.getStringExtra("password");
+
+            editEmail.setText(email);
+            editPassword.setText(password);
             firebaseAuth(intent.getStringExtra("email"), intent.getStringExtra("password"));
         }
     }
 
     private void firebaseAuth(String email, String password){
+        final ProgressDialog progressDialog = new ProgressDialog(LogInActivity.this);
+        progressDialog.setTitle(R.string.alert_title_please_wait);
+        progressDialog.setMessage(getString(R.string.alert_waiting_for_server));
+        progressDialog.show();
+
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                progressDialog.dismiss();
                 if(task.isSuccessful()){
                     //
                 }else{
