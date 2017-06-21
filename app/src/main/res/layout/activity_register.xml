@@ -11,9 +11,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@android:color/black"
         android:gravity="center"
         android:orientation="vertical"
-        android:background="@android:color/black"
         android:padding="16dp">
 
         <TextView
@@ -34,25 +34,27 @@
             android:src="@drawable/ic_default_profile" />
 
         <LinearLayout
-            android:background="@drawable/bg_round_white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:layout_marginBottom="16dp"
-            android:orientation="horizontal">
+            android:background="@drawable/bg_round_white"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_marginRight="16dp"
                 android:gravity="center"
                 android:text="@string/text_name" />
 
             <EditText
                 android:id="@+id/edit_name"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
                 android:background="@null"
                 android:inputType="text"
                 android:maxLines="1"
@@ -63,20 +65,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:orientation="horizontal">
+            android:background="@drawable/bg_round_white"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/text_email" />
+                android:text="@string/text_email"
+                android:layout_marginRight="16dp"/>
 
             <EditText
                 android:id="@+id/edit_email"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
                 android:background="@null"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
@@ -87,20 +93,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:orientation="horizontal">
+            android:background="@drawable/bg_round_white"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="center"
+                android:layout_marginRight="8dp"
                 android:text="@string/text_password" />
 
             <EditText
                 android:id="@+id/edit_password"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
                 android:background="@null"
                 android:inputType="textPassword"
                 android:maxLines="1"
@@ -111,19 +121,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:orientation="horizontal">
+            android:background="@drawable/bg_round_white"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="center"
+                android:layout_marginRight="16dp"
                 android:text="@string/text_password_confirm" />
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
                 android:orientation="vertical">
 
                 <EditText
@@ -141,31 +155,35 @@
                     android:layout_height="wrap_content"
                     android:text="@string/alert_password_confirm_not_match"
                     android:textColor="@color/colorAccent"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="@drawable/bg_round_white"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="center"
+                android:layout_marginRight="16dp"
                 android:text="@string/text_birthday" />
 
             <TextView
                 android:id="@+id/text_birth"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
                 android:inputType="datetime"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:text="@string/text_date_format" />
+                android:text="@string/text_select_date" />
         </LinearLayout>
 
         <Button

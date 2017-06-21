@@ -21,4 +21,5 @@
     <string name="option_select_gallery">갤러리</string>
     <string name="option_select_camera">카메라</string>
     <string name="warn_permission">이 기능을 사용하려면 권한을 허가해야합니다</string>
+    <string name="text_select_date">날짜 선택</string>
 </resources>
