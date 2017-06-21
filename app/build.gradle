@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "kr.edcan.paebook"
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -28,13 +28,16 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:design:25.4.0'
+    compile 'com.android.support:support-v4:25.4.0'
     compile 'com.google.firebase:firebase-core:10.0.1'
     compile 'com.google.firebase:firebase-database:10.0.1'
     compile 'com.google.firebase:firebase-storage:10.0.1'
     compile 'com.google.firebase:firebase-crash:10.0.1'
     compile 'com.google.firebase:firebase-auth:10.0.1'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
-    compile 'com.github.bumptech.glide:glide:4.0.0-RC0'
+    compile 'gun0912.ted:tedpermission:1.0.3'
+    compile 'com.github.bumptech.glide:glide:3.8.0'
+    compile 'jp.wasabeef:glide-transformations:2.0.2'
 }
 
 

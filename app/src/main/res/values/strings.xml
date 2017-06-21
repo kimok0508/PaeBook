@@ -3,7 +3,7 @@
     <string name="text_email">이메일</string>
     <string name="text_password">비밀 번호</string>
     <string name="text_login">로그인</string>
-    <string name="text_register">화원 가입</string>
+    <string name="text_register">회원 가입</string>
     <string name="text_name">이름</string>
     <string name="text_password_confirm">비밀 번호 확인</string>
     <string name="text_birthday">생년원일</string>
@@ -17,4 +17,8 @@
     <string name="text_date_format">yyyy년 MM월 dd일</string>
     <string name="alert_input_all_content">모든 항목을 입력해주세요</string>
     <string name="alert_password_not_match">사용자가 존재하지 않거나 비밀번호가 일치하지 않습니다</string>
+    <string name="option_picture_title">사진 선택</string>
+    <string name="option_select_gallery">갤러리</string>
+    <string name="option_select_camera">카메라</string>
+    <string name="warn_permission">이 기능을 사용하려면 권한을 허가해야합니다</string>
 </resources>

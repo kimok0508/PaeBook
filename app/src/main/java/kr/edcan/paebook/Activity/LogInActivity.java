@@ -1,16 +1,19 @@
 package kr.edcan.paebook.Activity;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,25 +25,35 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import kr.edcan.paebook.Models.UserProfile;
 import kr.edcan.paebook.R;
 
 public class LogInActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference dbUser;
+    private DatabaseReference dbUsers;
     private EditText editEmail, editPassword;
     private Button btnLogIn, btnRegister;
     private ImageView imgProfile;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
+        firebaseInit();
+        init();
+        autoLogIn();
+    }
+
+    private void firebaseInit(){
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        dbUser = firebaseDatabase.getReference("User").getRef();
+        dbUsers = firebaseDatabase.getReference("users").getRef();
+    }
 
+    private void init(){
         imgProfile = (ImageView) findViewById(R.id.img_profile);
         editEmail = (EditText) findViewById(R.id.edit_email);
         editPassword = (EditText) findViewById(R.id.edit_password);
@@ -63,11 +76,12 @@ public class LogInActivity extends AppCompatActivity {
                 final String email = editable.toString().trim();
 
                 if(email != null && !email.equals("")){
-                    dbUser.equalTo("email",  email).addListenerForSingleValueEvent(new ValueEventListener() {
+                    dbUsers.child(email).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot != null){
-                                //get profile image that match with email
+                                final UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+
                             }
                         }
 
@@ -91,16 +105,36 @@ public class LogInActivity extends AppCompatActivity {
                     return;
                 }
 
-                firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            //Success Action
-                        }else{
-                            Snackbar.make(view, R.string.alert_input_all_content, Snackbar.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                firebaseAuth(email, password);
+            }
+        });
+
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void autoLogIn() {
+        intent = getIntent();
+
+        if (intent.hasExtra("email") && intent.hasExtra("password")) {
+            firebaseAuth(intent.getStringExtra("email"), intent.getStringExtra("password"));
+        }
+    }
+
+    private void firebaseAuth(String email, String password){
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    //
+                }else{
+                    Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
