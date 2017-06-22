@@ -16,6 +16,7 @@ public class UserProfile {
     private String name;
     private String profileUrl;
     private long birth;
+    private String firebaseToken = "";
 
     public UserProfile(){}
 

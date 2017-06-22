@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">PaeBook</string>
+    <string name="text_email">email</string>
+    <string name="text_password">password</string>
+    <string name="text_login">login</string>
+    <string name="text_register">register</string>
+    <string name="text_name">name</string>
+    <string name="text_password_confirm">check password</string>
+    <string name="text_birthday">birthday</string>
+    <string name="text_profile_photo">profile image</string>
+    <string name="text_confirm">confirm</string>
+    <string name="text_post_list">posts</string>
+    <string name="text_write_post">write post</string>
+    <string name="text_post">post</string>
+    <string name="text_write_comment">confirm</string>
+    <string name="alert_password_confirm_not_match">invalid</string>
+    <string name="text_date_format">yyyy/MM/dd일</string>
+    <string name="text_date_format_detail">yyyy/MM/dd/HH/mm</string>
+    <string name="alert_input_all_content">fill all contents</string>
+    <string name="alert_password_not_match">user does not exist</string>
+    <string name="option_picture_title">select picture</string>
+    <string name="option_select_gallery">gallery</string>
+    <string name="option_select_camera">camera</string>
+    <string name="warn_permission">you need to allow this permission to use this function</string>
+    <string name="text_select_date">select date</string>
+    <string name="alert_title_please_wait">please wait</string>
+    <string name="alert_waiting_for_server">waiting for server response</string>
+    <string name="text_title">title</string>
+    <string name="text_content">content</string>
+    <string name="text_picture">사진</string>
+    <string name="warn_no_data">post does not exist</string>
+    <string name="text_delete">delete</string>
+    <string name="text_edit">edit</string>
+</resources>

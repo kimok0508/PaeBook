@@ -6,7 +6,7 @@
     <string name="text_register">회원 가입</string>
     <string name="text_name">이름</string>
     <string name="text_password_confirm">비밀 번호 확인</string>
-    <string name="text_birthday">생년원일</string>
+    <string name="text_birthday">생년월일</string>
     <string name="text_profile_photo">프로필 사진</string>
     <string name="text_confirm">확인</string>
     <string name="text_post_list">게시판</string>
