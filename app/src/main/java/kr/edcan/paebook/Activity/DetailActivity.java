@@ -10,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -43,6 +45,7 @@ public class DetailActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference dbComments;
     private DatabaseReference dbUsers;
+    private DatabaseReference dbPosts;
     private ImageRecyclerAdapter imageRecyclerAdapter;
     private LinearLayoutManager linearLayoutManagerForImages;
     private LinearLayoutManager linearLayoutManagerForComments;
@@ -80,10 +83,40 @@ public class DetailActivity extends AppCompatActivity {
         } else return false;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.menu_delete){
+            dbPosts.child(key).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        finish();
+                    }
+                }
+            });
+        }else if(item.getItemId() == R.id.menu_delete){
+            final Intent intent = new Intent(getApplicationContext(), PostActivity.class);
+            intent.putExtra("post", post);
+            intent.putExtra("key", key);
+            intent.putExtra("isEditMode", true);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void init() {
+        this.setTitle(R.string.text_post);
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         dbComments = firebaseDatabase.getReference("comments").getRef();
         dbUsers = firebaseDatabase.getReference("users").getRef();
+        dbPosts = firebaseDatabase.getReference("posts").getRef();
         dbComments.child(key).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -154,9 +187,9 @@ public class DetailActivity extends AppCompatActivity {
         textDate.setText(post.getTimeStamp(getApplicationContext()));
         textContent.setText(post.getContent());
 
-        arrayListImages = post.getImages();
         recyclerViewImages = (RecyclerView) findViewById(R.id.recycler_images);
-        if(arrayListImages.size() > 0) {
+        if(post.getImages().size() > 0) {
+            arrayListImages = post.getImages();
             imageRecyclerAdapter = new ImageRecyclerAdapter(getApplicationContext(), arrayListImages);
             linearLayoutManagerForImages = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
             recyclerViewImages.setLayoutManager(linearLayoutManagerForImages);
@@ -178,7 +211,7 @@ public class DetailActivity extends AppCompatActivity {
                 final String str = editComment.getText().toString().trim();
 
                 if (Application.uuid != null && str != null && !str.equals("")) {
-                    final Comment comment = new Comment().setUuid(Application.uuid).setContent(str).setTimeStamp(ServerValue.TIMESTAMP);
+                    final Comment comment = new Comment().setUuid(Application.uuid).setContent(str).setTimeStamp(ServerValue.TIMESTAMP).build();
 
                     dbComments.child(key).push().setValue(comment).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -198,23 +231,31 @@ public class DetailActivity extends AppCompatActivity {
     public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecyclerAdapter.ViewHolder> {
         private Context context;
         private ArrayList<Pair<String, Comment>> arrayList = new ArrayList<>();
+        private final static int TYPE_OUT = 0;
+        private final static int TYPE_IN = 1;
 
         public CommentRecyclerAdapter(Context context, ArrayList<Pair<String, Comment>> arrayList) {
             this.context = context;
             this.arrayList = arrayList;
         }
 
-        @Override
-        public CommentRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            final Comment comment = arrayList.get(i).second;
 
-            if (comment.getUuid().equals(Application.uuid)) {
+        @Override
+        public int getItemViewType(int position) {
+            final Comment comment = arrayList.get(position).second;
+            if(comment.getUuid().equals(Application.uuid)) return TYPE_OUT;
+            else return TYPE_IN;
+        }
+
+        @Override
+        public CommentRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            if (viewType == TYPE_OUT) {
                 final View view = LayoutInflater.from(context).inflate(R.layout.item_out_message, viewGroup, false);
                 return new ViewHolderForOut(view);
-            } else {
+            } else if(viewType == TYPE_IN){
                 final View view = LayoutInflater.from(context).inflate(R.layout.item_in_message, viewGroup, false);
                 return new ViewHolderForIn(view);
-            }
+            }else return null;
         }
 
         @Override
@@ -235,6 +276,20 @@ public class DetailActivity extends AppCompatActivity {
                 setUserProfile(uuid, viewHolderForOut.textName, viewHolderForOut.imgProfile);
                 viewHolderForOut.textComment.setText(content);
                 viewHolderForOut.textDate.setText(date);
+                viewHolderForOut.textDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dbComments.child(DetailActivity.this.key).child(key).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    DetailActivity.this.arrayListComments.remove(i);
+                                    DetailActivity.this.commentRecyclerAdapter.notifyItemRemoved(i);
+                                }
+                            }
+                        });
+                    }
+                });
             }
         }
 
@@ -297,12 +352,13 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         public class ViewHolderForOut extends CommentRecyclerAdapter.ViewHolder {
-            private TextView textName, textComment, textDate;
+            private TextView textName, textComment, textDate, textDelete;
             private ImageView imgProfile;
 
             public ViewHolderForOut(View itemView) {
                 super(itemView);
 
+                textDelete = (TextView) itemView.findViewById(R.id.text_delete);
                 textName = (TextView) itemView.findViewById(R.id.text_name);
                 textDate = (TextView) itemView.findViewById(R.id.text_date);
                 textComment = (TextView) itemView.findViewById(R.id.text_comment);

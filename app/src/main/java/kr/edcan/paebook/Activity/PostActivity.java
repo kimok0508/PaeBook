@@ -65,6 +65,9 @@ public class PostActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EditText editTitle, editContent;
     private Button btnWrite, btnSelect;
+    private boolean isEditMode = false;
+    private String editKey = null;
+    private Post editPost = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +110,7 @@ public class PostActivity extends AppCompatActivity {
                 final String content = editContent.getText().toString().trim();
 
                 if (uuid != null && title != null && !title.equals("") && content != null && !content.equals("")) {
-                    final Post post = new Post().setUuid(uuid).setTitle(title).setContent(content).setTimeStamp(ServerValue.TIMESTAMP);
+                    final Post post = new Post().setUuid(uuid).setTitle(title).setContent(content).setTimeStamp(ServerValue.TIMESTAMP).build();
                     final ArrayList<String> imageUrls = new ArrayList<>();
                     final DatabaseReference dbTarget = dbPosts.push();
                     final ProgressDialog progressDialog = new ProgressDialog(PostActivity.this);
@@ -115,50 +118,81 @@ public class PostActivity extends AppCompatActivity {
                     progressDialog.setMessage(getString(R.string.alert_waiting_for_server));
                     progressDialog.show();
 
-                    dbTarget.setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-                                if (arrayList.size() > 0) {
-                                    for (final Pair<String, Uri> image : arrayList) {
-                                        if (image != null) {
-                                            stPosts.child(uuid).child(image.first).putFile(image.second).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                                    if (task.isSuccessful()) {
-                                                        imageUrls.add(task.getResult().getDownloadUrl().toString());
-
-                                                        final Map<String, Object> map = new HashMap<>();
-                                                        map.put("images", imageUrls);
-                                                        dbTarget.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                if(task.isSuccessful()){
-                                                                    Toast.makeText(getApplicationContext(), String.format("%d개중 %d개 이미지 업로드 성공", arrayList.size() - 1, imageUrls.size() - 1), Toast.LENGTH_SHORT).show();
-                                                                }
-
-                                                                if(arrayList.size() == imageUrls.size()){
-                                                                    progressDialog.dismiss();
-                                                                    finish();
-                                                                }
-                                                            }
-                                                        });
-                                                    }
-                                                }
-                                            });
-                                        }
-                                    }
+                    if(isEditMode){
+                        final Map<String,Object> data = new HashMap<>();
+                        data.put("title", title);
+                        data.put("content", content);
+                        data.put("timeStamp", ServerValue.TIMESTAMP);
+                        dbPosts.child(editKey).updateChildren(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    finish();
                                 }
-                            }else{
-                                Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        }
-                    });
+                        });
+                    }else {
+                        dbTarget.setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    if (arrayList.size() > 0) {
+                                        for (final Pair<String, Uri> image : arrayList) {
+                                            if (image != null) {
+                                                stPosts.child(uuid).child(image.first).putFile(image.second).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                        if (task.isSuccessful()) {
+                                                            imageUrls.add(task.getResult().getDownloadUrl().toString());
+
+                                                            final Map<String, Object> map = new HashMap<>();
+                                                            map.put("images", imageUrls);
+                                                            dbTarget.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    if (task.isSuccessful()) {
+                                                                        Toast.makeText(getApplicationContext(), String.format("%d개중 %d개 이미지 업로드 성공", arrayList.size() - 1, imageUrls.size() - 1), Toast.LENGTH_SHORT).show();
+                                                                    }
+
+                                                                    if (arrayList.size() == imageUrls.size()) {
+                                                                        progressDialog.dismiss();
+                                                                        finish();
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    } else {
+                                        progressDialog.dismiss();
+                                        finish();
+                                    }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.alert_input_all_content, Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        if(getIntent().getBooleanExtra("isEditMode", false)){
+            this.isEditMode = true;
+            this.editKey = getIntent().getStringExtra("key");
+            this.editPost = (Post) getIntent().getSerializableExtra("post");
+
+            editTitle.setText(editPost.getTitle());
+            editContent.setText(editPost.getContent());
+            for(String img : editPost.getImages()){
+                arrayList.add(new Pair<String, Uri>("", Uri.parse(img)));
+            }
+            btnWrite.setEnabled(false);
+        }
     }
 
     private void selectImage() {

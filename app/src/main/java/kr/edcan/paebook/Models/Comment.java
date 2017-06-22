@@ -39,6 +39,10 @@ public class Comment {
         return this;
     }
 
+    public Comment build(){
+        return this;
+    }
+
     public String getUuid(){
         return this.uuid;
     }

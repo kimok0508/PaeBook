@@ -4,13 +4,20 @@
     android:orientation="horizontal"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/img_profile"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginRight="16dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_default_profile" />
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_gravity="top"
+            android:id="@+id/img_profile"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_default_profile" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,6 +61,7 @@
             android:minHeight="16dp"
             android:textColor="@color/colorWhite"
             android:paddingTop="16dp"
+            android:text="Hello, World!"
             android:paddingRight="16dp"
             android:paddingBottom="16dp"
             android:background="@drawable/bg_out_bubble"/>

@@ -46,6 +46,10 @@ public class UserProfile {
         return this;
     }
 
+    public UserProfile build(){
+        return this;
+    }
+
     public String getEmail(){
         return this.email;
     }

@@ -171,7 +171,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     final FirebaseUser user = task.getResult().getUser();
                                     final String uid = user.getUid();
                                     final DatabaseReference dbTarget = dbUsers.child(uid).getRef();
-                                    final UserProfile userProfile = new UserProfile().setEmail(email).setName(name).setBirth(birthDate.getTime());
+                                    final UserProfile userProfile = new UserProfile().setEmail(email).setName(name).setBirth(birthDate.getTime()).build();
 
                                     if (!selectedImageURI.equals(Uri.EMPTY)) {
                                         final StorageReference stTarget = stUsers.child(uid);
@@ -180,7 +180,7 @@ public class RegisterActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                                 if (task.isSuccessful()) {
                                                     final String profileUrl = task.getResult().getDownloadUrl().toString();
-                                                    sendUserProfile(email, password, progressDialog,dbTarget, userProfile.setProfileUrl(profileUrl));
+                                                    sendUserProfile(email, password, progressDialog,dbTarget, userProfile.setProfileUrl(profileUrl).build());
                                                 } else {
                                                     Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                                 }

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dbPosts;
     private PostRecyclerAdapter recyclerAdapter;
     private LinearLayoutManager linearLayoutManager;
+    private ChildEventListener childEventListener;
     private ArrayList<Pair<String, Post>> arrayList = new ArrayList<>();
 
     private RecyclerView recyclerView;
@@ -53,12 +54,26 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        dbPosts.addChildEventListener(childEventListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        dbPosts.removeEventListener(childEventListener);
+        arrayList.clear();
+        recyclerAdapter.notifyDataSetChanged();
+    }
+
     private void init(){
         this.setTitle(R.string.text_post_list);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         dbPosts = firebaseDatabase.getReference("posts").getRef();
-        dbPosts.addChildEventListener(new ChildEventListener() {
+        childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot != null){
@@ -89,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_post);
         recyclerAdapter = new PostRecyclerAdapter(getApplicationContext(), arrayList);

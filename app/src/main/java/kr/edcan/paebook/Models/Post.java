@@ -55,6 +55,10 @@ public class Post implements Serializable {
         return this;
     }
 
+    public Post build(){
+        return this;
+    }
+
     public String getTitle(){
         return this.title;
     }
