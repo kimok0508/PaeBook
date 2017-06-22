@@ -100,7 +100,7 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 }
             });
-        }else if(item.getItemId() == R.id.menu_delete){
+        }else if(item.getItemId() == R.id.menu_edit){
             final Intent intent = new Intent(getApplicationContext(), PostActivity.class);
             intent.putExtra("post", post);
             intent.putExtra("key", key);
@@ -188,7 +188,7 @@ public class DetailActivity extends AppCompatActivity {
         textContent.setText(post.getContent());
 
         recyclerViewImages = (RecyclerView) findViewById(R.id.recycler_images);
-        if(post.getImages().size() > 0) {
+        if(post.getImages() != null && post.getImages().size() > 0) {
             arrayListImages = post.getImages();
             imageRecyclerAdapter = new ImageRecyclerAdapter(getApplicationContext(), arrayListImages);
             linearLayoutManagerForImages = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
