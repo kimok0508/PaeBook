@@ -144,6 +144,8 @@ public class PostActivity extends AppCompatActivity {
                                     intent.putExtra("content", content);
                                     setResult(RESULT_OK, intent);
                                     finish();
+                                }else{
+                                    Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
