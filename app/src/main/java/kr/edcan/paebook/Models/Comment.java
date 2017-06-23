@@ -24,23 +24,16 @@ public class Comment {
         this.timeStamp = timeStamp;
     }
 
-    public Comment setTimeStamp(Object timeStamp){
-        this.timeStamp = timeStamp;
-        return this;
-    }
-
-    public Comment setUuid(String uuid){
+    public void setUuid(String uuid) {
         this.uuid = uuid;
-        return this;
     }
 
-    public Comment setContent(String content){
+    public void setContent(String content) {
         this.content = content;
-        return this;
     }
 
-    public Comment build(){
-        return this;
+    public void setTimeStamp(Object timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public String getUuid(){

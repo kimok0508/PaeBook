@@ -86,6 +86,13 @@
             android:layout_marginBottom="8dp"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/text_warn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/warn_image_edit"
+                android:visibility="gone"/>
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_images"
                 android:layout_width="match_parent"

@@ -23,6 +23,6 @@ public class FirebaseInstanceIdService extends com.google.firebase.iid.FirebaseI
         final DatabaseReference dbUsers = firebaseDatabase.getReference("users").getRef();
         final Map<String, Object> data = new HashMap<>();
         data.put("firebaseToken", FirebaseInstanceId.getInstance().getToken());
-        dbUsers.child(Application.uuid).updateChildren(data);
+        if(Application.uuid != null) dbUsers.child(Application.uuid).updateChildren(data);
     }
 }

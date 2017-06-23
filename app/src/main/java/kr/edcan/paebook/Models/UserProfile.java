@@ -27,24 +27,28 @@ public class UserProfile {
         this.birth = birth;
     }
 
-    public UserProfile setEmail(String email){
+    public void setEmail(String email) {
         this.email = email;
-        return this;
     }
 
-    public UserProfile setName(String name){
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
-    public UserProfile setProfileUrl(String profileUrl){
+    public void setProfileUrl(String profileUrl) {
         this.profileUrl = profileUrl;
-        return this;
     }
 
-    public UserProfile setBirth(long birth){
+    public void setBirth(long birth) {
         this.birth = birth;
-        return this;
+    }
+
+    public void setFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
+    }
+
+    public String getFirebaseToken() {
+        return firebaseToken;
     }
 
     public UserProfile build(){

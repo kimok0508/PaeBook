@@ -34,13 +34,20 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
 
-                if(currentUser == null) nextSignIn();
+
+                if (currentUser == null) nextSignIn();
                 else getUserProfile(currentUser);
             }
         });
@@ -49,11 +56,11 @@ public class SplashActivity extends AppCompatActivity {
         dbUsers = firebaseDatabase.getReference("users").getRef();
     }
 
-    private void getUserProfile(final FirebaseUser firebaseUser){
+    private void getUserProfile(final FirebaseUser firebaseUser) {
         dbUsers.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot != null){
+                if (dataSnapshot != null) {
                     Application.uuid = firebaseUser.getUid();
                     Application.userProfile = dataSnapshot.getValue(UserProfile.class);
                     final Map<String, Object> data = new HashMap<>();
@@ -70,23 +77,17 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
-    private void nextSignIn(){
+    private void nextSignIn() {
         final Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
 
-    private void nextMain(){
-        try {
-            Thread.sleep(1000);
-            final Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }finally {
-            finish();
-        }
+    private void nextMain() {
+        final Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 }

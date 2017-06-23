@@ -1,6 +1,8 @@
 package kr.edcan.paebook.Activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -86,28 +88,55 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_detail, menu);
-        return Application.uuid == post.getUuid();
+        return Application.uuid.equals(post.getUuid());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_delete){
-            dbPosts.child(key).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        finish();
-                    }
-                }
-            });
+            final AlertDialog alertDialog = new AlertDialog.Builder(DetailActivity.this)
+                    .setTitle(R.string.text_post_delete)
+                    .setMessage(R.string.text_really_delete)
+                    .setPositiveButton(R.string.text_delete, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dbPosts.child(key).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        finish();
+                                    }
+                                }
+                            });
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .setNegativeButton(R.string.text_cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .show();
         }else if(item.getItemId() == R.id.menu_edit){
             final Intent intent = new Intent(getApplicationContext(), PostActivity.class);
             intent.putExtra("post", post);
             intent.putExtra("key", key);
             intent.putExtra("isEditMode", true);
-            startActivity(intent);
+            startActivityForResult(intent,0);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 0 && resultCode == RESULT_OK){
+            final String title = data.getStringExtra("title");
+            final String content = data.getStringExtra("content");
+            textTitle.setText(title);
+            textContent.setText(content);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void init() {
@@ -211,7 +240,7 @@ public class DetailActivity extends AppCompatActivity {
                 final String str = editComment.getText().toString().trim();
 
                 if (Application.uuid != null && str != null && !str.equals("")) {
-                    final Comment comment = new Comment().setUuid(Application.uuid).setContent(str).setTimeStamp(ServerValue.TIMESTAMP).build();
+                    final Comment comment = new Comment(Application.uuid, str, ServerValue.TIMESTAMP);
 
                     dbComments.child(key).push().setValue(comment).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -259,9 +288,9 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(CommentRecyclerAdapter.ViewHolder viewHolder, final int i) {
-            final String key = arrayList.get(i).first;
-            final Comment comment = arrayList.get(i).second;
+        public void onBindViewHolder(CommentRecyclerAdapter.ViewHolder viewHolder, final int position) {
+            final String key = arrayList.get(position).first;
+            final Comment comment = arrayList.get(position).second;
             final String uuid = comment.getUuid();
             final String content = comment.getContent();
             final String date = comment.getTimeStamp(context);
@@ -279,18 +308,47 @@ public class DetailActivity extends AppCompatActivity {
                 viewHolderForOut.textDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dbComments.child(DetailActivity.this.key).child(key).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    DetailActivity.this.arrayListComments.remove(i);
-                                    DetailActivity.this.commentRecyclerAdapter.notifyItemRemoved(i);
-                                }
-                            }
-                        });
+                        final AlertDialog alertDialog = new AlertDialog.Builder(DetailActivity.this)
+                                .setTitle(R.string.text_comment_delete)
+                                .setMessage(R.string.text_really_delete)
+                                .setPositiveButton(R.string.text_delete, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        if(Application.uuid.equals(uuid)) {
+                                            dbComments.child(DetailActivity.this.key).child(key).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        deleteComment(position);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        dialogInterface.dismiss();
+                                    }
+                                })
+                                .setNegativeButton(R.string.text_cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                })
+                                .show();
                     }
                 });
             }
+        }
+
+        private void deleteComment(int position){
+//            final ArrayList<Pair<String,Comment>> arrayList = new ArrayList<>();
+            DetailActivity.this.arrayListComments.remove(position);
+//            DetailActivity.this.commentRecyclerAdapter.notifyItemRemoved(position);
+//
+//            for(Pair<String, Comment> pair : DetailActivity.this.arrayListComments){
+//                if(pair != null) arrayList.add(pair);
+//            }
+//            DetailActivity.this.arrayListComments = arrayList;
+            DetailActivity.this.commentRecyclerAdapter.notifyDataSetChanged();
         }
 
         private void setUserProfile(String uuid, final TextView textView, final ImageView imageView) {

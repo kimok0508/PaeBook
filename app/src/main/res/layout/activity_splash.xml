@@ -1,10 +1,12 @@
 <FrameLayout android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="192px"
+        android:layout_height="192px"
         android:src="@mipmap/ic_launcher"
         android:layout_gravity="center"/>
 </FrameLayout>

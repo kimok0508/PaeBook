@@ -30,33 +30,24 @@ public class Post implements Serializable {
         this.timeStamp = timeStamp;
     }
 
-    public Post setUuid(String uuid){
+    public void setUuid(String uuid) {
         this.uuid = uuid;
-        return this;
     }
 
-    public Post setContent(String content){
-        this.content = content;
-        return this;
-    }
-
-    public Post setTitle(String title){
+    public void setTitle(String title) {
         this.title = title;
-        return this;
     }
 
-    public Post setImages(ArrayList<String> images){
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setImages(ArrayList<String> images) {
         this.images = images;
-        return this;
     }
 
-    public Post setTimeStamp(Object timeStamp){
+    public void setTimeStamp(Object timeStamp) {
         this.timeStamp = timeStamp;
-        return this;
-    }
-
-    public Post build(){
-        return this;
     }
 
     public String getTitle(){

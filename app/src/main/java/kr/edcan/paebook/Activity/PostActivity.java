@@ -1,7 +1,10 @@
 package kr.edcan.paebook.Activity;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.projection.MediaProjection;
 import android.net.Uri;
@@ -13,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -43,9 +48,13 @@ import java.util.Map;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import kr.edcan.paebook.Dialog.OptionDialog;
+import kr.edcan.paebook.Models.Comment;
 import kr.edcan.paebook.Models.Post;
 import kr.edcan.paebook.R;
 import kr.edcan.paebook.Utils.Application;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
 public class PostActivity extends AppCompatActivity {
     private enum RequestCode {
@@ -59,13 +68,14 @@ public class PostActivity extends AppCompatActivity {
     private StorageReference stPosts;
     private ImageRecyclerAdapter recyclerAdapter;
     private LinearLayoutManager linearLayoutManager;
-    private ArrayList<Pair<String,Uri>> arrayList = new ArrayList<>();
+    private ArrayList<Pair<String, Uri>> arrayList = new ArrayList<>();
     private OptionDialog profileOption;
 
     private RecyclerView recyclerView;
     private EditText editTitle, editContent;
     private Button btnWrite, btnSelect;
     private boolean isEditMode = false;
+    private TextView textWarn;
     private String editKey = null;
     private Post editPost = null;
 
@@ -100,6 +110,7 @@ public class PostActivity extends AppCompatActivity {
                 selectImage();
             }
         });
+        textWarn = (TextView) findViewById(R.id.text_warn);
 
         btnWrite = (Button) findViewById(R.id.btn_write);
         btnWrite.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +121,7 @@ public class PostActivity extends AppCompatActivity {
                 final String content = editContent.getText().toString().trim();
 
                 if (uuid != null && title != null && !title.equals("") && content != null && !content.equals("")) {
-                    final Post post = new Post().setUuid(uuid).setTitle(title).setContent(content).setTimeStamp(ServerValue.TIMESTAMP).build();
+                    final Post post = new Post(uuid, title, content, new ArrayList<String>(), ServerValue.TIMESTAMP);
                     final ArrayList<String> imageUrls = new ArrayList<>();
                     final DatabaseReference dbTarget = dbPosts.push();
                     final ProgressDialog progressDialog = new ProgressDialog(PostActivity.this);
@@ -118,20 +129,25 @@ public class PostActivity extends AppCompatActivity {
                     progressDialog.setMessage(getString(R.string.alert_waiting_for_server));
                     progressDialog.show();
 
-                    if(isEditMode){
-                        final Map<String,Object> data = new HashMap<>();
+                    if (isEditMode) {
+                        final Map<String, Object> data = new HashMap<>();
                         data.put("title", title);
                         data.put("content", content);
                         data.put("timeStamp", ServerValue.TIMESTAMP);
                         dbPosts.child(editKey).updateChildren(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
+                                progressDialog.dismiss();
+                                if (task.isSuccessful()) {
+                                    final Intent intent = new Intent();
+                                    intent.putExtra("title", title);
+                                    intent.putExtra("content", content);
+                                    setResult(RESULT_OK, intent);
                                     finish();
                                 }
                             }
                         });
-                    }else {
+                    } else {
                         dbTarget.setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
@@ -181,17 +197,16 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
-        if(getIntent().getBooleanExtra("isEditMode", false)){
+        if (getIntent().getBooleanExtra("isEditMode", false)) {
             this.isEditMode = true;
             this.editKey = getIntent().getStringExtra("key");
             this.editPost = (Post) getIntent().getSerializableExtra("post");
 
             editTitle.setText(editPost.getTitle());
             editContent.setText(editPost.getContent());
-            for(String img : editPost.getImages()){
-                arrayList.add(new Pair<String, Uri>("", Uri.parse(img)));
-            }
-            btnWrite.setEnabled(false);
+            recyclerView.setVisibility(View.GONE);
+            btnSelect.setVisibility(View.GONE);
+            textWarn.setVisibility(View.VISIBLE);
         }
     }
 
@@ -225,7 +240,7 @@ public class PostActivity extends AppCompatActivity {
                                             Toast.makeText(getApplicationContext(), R.string.warn_permission, Toast.LENGTH_SHORT).show();
                                         }
                                     })
-                                    .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
                                     .check();
                             profileOption.dismiss();
                         }
@@ -241,6 +256,7 @@ public class PostActivity extends AppCompatActivity {
                         }
                     });
         }
+        profileOption.getWindow().setLayout(MATCH_PARENT, WRAP_CONTENT);
         profileOption.show();
     }
 
@@ -248,19 +264,23 @@ public class PostActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             final Uri imageUri = data.getData();
-            final String name = "image" + System.currentTimeMillis();
-            arrayList.add(new Pair<String, Uri>(name, imageUri));
-            recyclerAdapter.notifyItemInserted(arrayList.size());
+            if(imageUri != null && imageUri != Uri.EMPTY) {
+                final String name = "image" + System.currentTimeMillis();
+                arrayList.add(new Pair<String, Uri>(name, imageUri));
+                recyclerAdapter.notifyItemInserted(arrayList.size());
+            }else{
+                Toast.makeText(getApplicationContext(), R.string.error_not_supported, Toast.LENGTH_SHORT).show();
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdapter.ViewHolder>{
+    public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdapter.ViewHolder> {
         private Context context;
-        private ArrayList<Pair<String,Uri>> arrayList = new ArrayList<>();
+        private ArrayList<Pair<String, Uri>> arrayList = new ArrayList<>();
 
-        public ImageRecyclerAdapter(Context context, ArrayList<Pair<String,Uri>> arrayList){
+        public ImageRecyclerAdapter(Context context, ArrayList<Pair<String, Uri>> arrayList) {
             this.context = context;
             this.arrayList = arrayList;
         }
@@ -272,19 +292,46 @@ public class PostActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder viewHolder, final int i) {
-            final Uri uri = arrayList.get(i).second;
+        public void onBindViewHolder(ViewHolder viewHolder, final int position) {
+            final Uri uri = arrayList.get(position).second;
 
-            if(uri != null && uri != Uri.EMPTY){
+            if (uri != null && uri != Uri.EMPTY) {
                 Glide.with(context).load(uri).into(viewHolder.img);
                 viewHolder.img.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        PostActivity.this.arrayList.remove(i);
-                        ImageRecyclerAdapter.this.notifyItemRemoved(i);
+                        final AlertDialog alertDialog = new AlertDialog.Builder(PostActivity.this)
+                                .setTitle(R.string.text_image_delete)
+                                .setMessage(R.string.text_really_delete)
+                                .setPositiveButton(R.string.text_delete, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        deleteImage(position);
+                                        dialogInterface.dismiss();
+                                    }
+                                })
+                                .setNegativeButton(R.string.text_cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                })
+                                .show();
                     }
                 });
             }
+        }
+
+        private void deleteImage(int position) {
+//            final ArrayList<Pair<String, Uri>> arrayList = new ArrayList<>();
+            PostActivity.this.arrayList.remove(position);
+//            PostActivity.this.recyclerAdapter.notifyItemRemoved(position);
+//
+//            for (Pair<String, Uri> pair : PostActivity.this.arrayList) {
+//                if (pair != null) arrayList.add(pair);
+//            }
+//            PostActivity.this.arrayList = arrayList;
+            PostActivity.this.recyclerAdapter.notifyDataSetChanged();
         }
 
         @Override
@@ -292,7 +339,7 @@ public class PostActivity extends AppCompatActivity {
             return arrayList.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder{
+        public class ViewHolder extends RecyclerView.ViewHolder {
             private ImageView img;
 
             public ViewHolder(View itemView) {

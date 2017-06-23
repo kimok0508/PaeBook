@@ -171,7 +171,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     final FirebaseUser user = task.getResult().getUser();
                                     final String uid = user.getUid();
                                     final DatabaseReference dbTarget = dbUsers.child(uid).getRef();
-                                    final UserProfile userProfile = new UserProfile().setEmail(email).setName(name).setBirth(birthDate.getTime()).build();
+                                    final UserProfile userProfile = new UserProfile(email, name, null,birthDate.getTime());
 
                                     if (!selectedImageURI.equals(Uri.EMPTY)) {
                                         final StorageReference stTarget = stUsers.child(uid);
@@ -180,7 +180,8 @@ public class RegisterActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                                 if (task.isSuccessful()) {
                                                     final String profileUrl = task.getResult().getDownloadUrl().toString();
-                                                    sendUserProfile(email, password, progressDialog,dbTarget, userProfile.setProfileUrl(profileUrl).build());
+                                                    userProfile.setProfileUrl(profileUrl);
+                                                    sendUserProfile(email, password, progressDialog,dbTarget, userProfile);
                                                 } else {
                                                     Toast.makeText(getApplicationContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                                 }
@@ -252,7 +253,7 @@ public class RegisterActivity extends AppCompatActivity {
                                             Toast.makeText(getApplicationContext(), R.string.warn_permission, Toast.LENGTH_SHORT).show();
                                         }
                                     })
-                                    .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.CAMERA)
                                     .check();
                             profileOption.dismiss();
                         }

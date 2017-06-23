@@ -31,4 +31,13 @@
     <string name="warn_no_data">post does not exist</string>
     <string name="text_delete">delete</string>
     <string name="text_edit">edit</string>
+    <string name="text_image_delete">Delete image</string>
+    <string name="text_post_delete">Delete post</string>
+    <string name="text_comment_delete">Delete comment</string>
+    <string name="text_really_delete">Do you really want to delete this?</string>
+    <string name="text_cancel">cancel</string>
+    <string name="error_not_supported">Your device does not support this feature!</string>
+    <string name="text_comment">Comments</string>
+    <string name="warn_image_edit">Images can not </string>
+    <string name="text_logout">Log Out</string>
 </resources>
