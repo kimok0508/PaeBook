@@ -169,7 +169,7 @@ public class PostActivity extends AppCompatActivity {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                     if (task.isSuccessful()) {
-                                                                        Toast.makeText(getApplicationContext(), String.format("%d개중 %d개 이미지 업로드 성공", arrayList.size() - 1, imageUrls.size() - 1), Toast.LENGTH_SHORT).show();
+                                                                        Toast.makeText(getApplicationContext(), String.format("%d개중 %d개 이미지 업로드 성공", arrayList.size(), imageUrls.size()), Toast.LENGTH_SHORT).show();
                                                                     }
 
                                                                     if (arrayList.size() == imageUrls.size()) {
