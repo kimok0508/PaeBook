@@ -94,7 +94,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if(dataSnapshot != null){
+                    final String key = dataSnapshot.getKey();
+                    final Post post = dataSnapshot.getValue(Post.class);
+                    arrayList.remove(post);
 
+                    if(recyclerAdapter != null) recyclerAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override

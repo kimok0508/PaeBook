@@ -165,7 +165,13 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                if (dataSnapshot != null) {
+                    final String key = dataSnapshot.getKey();
+                    final Comment comment = dataSnapshot.getValue(Comment.class);
+                    arrayListComments.remove(new Pair<String, Comment>(key, comment));
+                    if (commentRecyclerAdapter != null)
+                        commentRecyclerAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
